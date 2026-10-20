@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#f8dbe5">
+	<meta name="description" content="Một lời chúc 20/10, hành trình từ vài câu hỏi bài đến những cuộc trò chuyện thân thiết.">
+	<title>Gửi bạn thân — 10 năm, 10 cung bậc cảm xúc</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			color-scheme: light;
+			--ink: #493d49;
+			--muted: #817482;
+			--rose: #e77497;
+			--paper: rgba(255, 255, 255, .82);
+			--ease: cubic-bezier(.22, .8, .25, 1);
+		}
+		* { box-sizing: border-box; }
+		html { min-width: 320px; min-height: 100%; background: #f8dbe5; }
+		body { margin: 0; min-height: 100vh; color: var(--ink); font-family: "Be Vietnam Pro", sans-serif; overflow-x: hidden; }
+		button { font: inherit; }
+		button:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+		.screen {
+			position: fixed; inset: 0; display: grid; place-items: center; overflow: hidden;
+			opacity: 0; visibility: hidden; transform: translateY(12px) scale(.99);
+			transition: opacity .65s var(--ease), transform .65s var(--ease), visibility .65s;
+			isolation: isolate;
+		}
+		.screen.active { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+		.screen.leaving { opacity: 0; transform: translateY(-10px) scale(.985); }
+		.screen-content { position: relative; z-index: 2; width: min(100% - 36px, 1050px); }
+		.script { font-family: "Dancing Script", cursive; }
+		.eyebrow { margin: 0; font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; }
+		.primary-button, .secondary-button {
+			border: 0; border-radius: 999px; min-height: 54px; padding: 0 30px; cursor: pointer;
+			transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .25s;
+		}
+		.primary-button { color: white; font-weight: 700; background: linear-gradient(110deg, #e66f9b, #f69c9f 55%, #f5b77f); box-shadow: 0 11px 30px #d9759860; }
+		.primary-button:hover { transform: translateY(-3px) scale(1.035); box-shadow: 0 16px 38px #d9759873; }
+		.secondary-button { color: #716879; background: #e8e5e9; font-weight: 600; }
+		.secondary-button:hover { transform: translateY(-2px); }
+
+		/* Màn mở đầu: thiệp hồng trong trẻo và cánh hoa bay nhẹ. */
+		#welcome { background: radial-gradient(ellipse at 50% 46%, #fff7f4 0, #ffe8ed 38%, #f5ccdf 100%); }
+		#welcome::before, #welcome::after { content: ""; position: absolute; border: 1px solid #fff8; border-radius: 50%; pointer-events: none; }
+		#welcome::before { width: min(82vw, 720px); aspect-ratio: 1; }
+		#welcome::after { width: min(66vw, 570px); aspect-ratio: 1; }
+		.welcome-content { text-align: center; padding: 44px 0; }
+		.flower-bouquet { position: relative; display: inline-grid; place-items: center; width: 170px; height: 145px; margin-bottom: 2px; animation: bouquetFloat 4s ease-in-out infinite; }
+		.flower-bouquet span { position: absolute; filter: drop-shadow(0 10px 8px #aa6c7550); }
+		.flower-bouquet .flower-main { font-size: 6rem; transform: translateY(-4px); }
+		.flower-bouquet .flower-left { font-size: 3.2rem; transform: translate(-53px, 20px) rotate(-17deg); }
+		.flower-bouquet .flower-right { font-size: 3.2rem; transform: translate(52px, 21px) rotate(17deg); }
+		.welcome-year { margin: 0; color: #d65382; font-size: clamp(5.4rem, 18vw, 10rem); line-height: .86; font-weight: 700; letter-spacing: .01em; text-shadow: 0 0 24px #fff, 0 0 46px #f4a3bd; animation: glow 3s ease-in-out infinite alternate; }
+		.welcome-title { max-width: 680px; margin: 24px auto 30px; font-size: clamp(1.15rem, 3vw, 1.8rem); line-height: 1.6; font-weight: 500; }
+		.welcome-title span { color: #d65382; }
+		.petal { position: absolute; top: -30px; z-index: 1; pointer-events: none; animation: fall linear infinite; opacity: .65; }
+		.petal::before { content: ""; display: block; width: 12px; height: 18px; border-radius: 90% 10% 80% 20%; background: linear-gradient(140deg, #fff8, #e884a5); transform: rotate(35deg); }
+
+		/* Màn xác nhận: đêm tím với các ngôi sao tĩnh. */
+		#question { color: #fff8fc; background: radial-gradient(ellipse at 48% 45%, #684b79 0, #392e57 48%, #211f3d 100%); }
+		#question::before { content: ""; position: absolute; inset: 0; opacity: .52; background-image: radial-gradient(2px 2px at 13% 20%, #fff 50%, transparent 60%), radial-gradient(1px 1px at 77% 18%, #fff 50%, transparent 60%), radial-gradient(2px 2px at 86% 70%, #ffd6e5 50%, transparent 60%), radial-gradient(1px 1px at 24% 77%, #fff 50%, transparent 60%), radial-gradient(1px 1px at 57% 12%, #fff 50%, transparent 60%), radial-gradient(2px 2px at 40% 88%, #fff 50%, transparent 60%); }
+		.question-content { max-width: 680px; text-align: center; }
+		.envelope { display: block; font-size: 4rem; margin-bottom: 20px; animation: envelopePulse 2.2s ease-in-out infinite; }
+		.question-content h2 { margin: 8px 0 34px; font-size: clamp(1.8rem, 5vw, 3.3rem); line-height: 1.3; }
+		.question-actions { display: flex; align-items: center; justify-content: center; gap: 14px; }
+		.question-actions .primary-button { min-width: 145px; }
+		.question-actions .secondary-button { min-width: 145px; }
+		#no-button.shake { animation: shake .42s ease-in-out; }
+		#yes-button.boosted { transform: scale(1.18); box-shadow: 0 0 0 8px #f493bb18, 0 0 36px #ff8fbdad; }
+		#no-button.vanish { pointer-events: none; animation: vanish .55s forwards; }
+		.no-message { min-height: 52px; margin: 28px auto 0; max-width: 540px; color: #ffe1ed; font-size: 1rem; line-height: 1.7; opacity: 0; transform: translateY(7px); transition: .3s var(--ease); }
+		.no-message.show { opacity: 1; transform: translateY(0); }
+
+		/* Hành trình: từng chương dùng bảng màu và hạt nền riêng. */
+		#journey { --bg-one: #fff9f6; --bg-two: #f6dfe9; --accent: #d85e8b; --text: #493d49; --muted-theme: #806f7c; --card: #fffaf7e8; --glow: #ffffff80; background: linear-gradient(135deg, var(--bg-one), var(--bg-two)); color: var(--text); transition: background 1s ease, color .7s ease; }
+		#journey::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at 14% 10%, var(--glow), transparent 40%), radial-gradient(ellipse at 90% 90%, var(--glow), transparent 36%); transition: background 1s ease; }
+		#journey[data-theme="2017"] { --bg-one: #fffdf9; --bg-two: #f7dce6; --accent: #dc7095; --text: #514653; --muted-theme: #897a87; --card: #fffdf9e8; --glow: #fff4c990; }
+		#journey[data-theme="2018"] { --bg-one: #f6e6bd; --bg-two: #d6ae73; --accent: #9b5e40; --text: #513d34; --muted-theme: #836b58; --card: #fff6e7e8; --glow: #fff0c785; }
+		#journey[data-theme="2019"] { --bg-one: #f6c77a; --bg-two: #bd7d53; --accent: #8a4a36; --text: #442e29; --muted-theme: #725049; --card: #fff2d9e4; --glow: #ffe8a894; }
+		#journey[data-theme="2020"] { --bg-one: #192a3d; --bg-two: #334657; --accent: #d4b6c7; --text: #f6edf3; --muted-theme: #c4b8c5; --card: #243649dd; --glow: #8b9baa35; }
+		#journey[data-theme="2021"] { --bg-one: #52656a; --bg-two: #869493; --accent: #f2d0c3; --text: #f9f3ed; --muted-theme: #e4ded7; --card: #40565be8; --glow: #c7d8d655; }
+		#journey[data-theme="2022"] { --bg-one: #ffeaa4; --bg-two: #f3a65f; --accent: #b84d35; --text: #4a342a; --muted-theme: #765344; --card: #fff7dfe8; --glow: #fffbd7c9; }
+		#journey[data-theme="2023"] { --bg-one: #e8ece9; --bg-two: #bec9c5; --accent: #57796d; --text: #34423d; --muted-theme: #677570; --card: #fbfcf8e8; --glow: #ffffffc7; }
+		#journey[data-theme="2024"] { --bg-one: #403a4c; --bg-two: #62505b; --accent: #e6a6a0; --text: #f8eeea; --muted-theme: #d4c3c4; --card: #3c3745e8; --glow: #b77b7833; }
+		#journey[data-theme="2025"] { --bg-one: #ffe6d0; --bg-two: #f2a9a2; --accent: #c55271; --text: #503940; --muted-theme: #82646c; --card: #fff7eee8; --glow: #fff7cfb8; }
+		#journey[data-theme="2026"] { --bg-one: #f7d2ac; --bg-two: #e989a7; --accent: #a73d65; --text: #4e293d; --muted-theme: #795160; --card: #fff8ecef; --glow: #fff3becc; }
+		.journey-content { display: flex; flex-direction: column; justify-content: center; min-height: 100vh; padding: 34px 0 24px; }
+		.chapter-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+		.chapter-kicker { color: var(--accent); }
+		.chapter-mood { margin: 7px 0 0; color: var(--muted-theme); font-size: clamp(.85rem, 2vw, 1rem); }
+		.chapter-year { margin: 0; color: var(--accent); font-size: clamp(3rem, 8vw, 5.8rem); line-height: .9; font-weight: 700; opacity: .9; }
+		.story-layout { display: grid; grid-template-columns: minmax(210px, .76fr) minmax(0, 1.4fr); align-items: center; gap: clamp(20px, 5vw, 68px); }
+		.scene { position: relative; display: grid; place-items: center; min-height: 290px; overflow: hidden; border-radius: 8px; background: linear-gradient(145deg, #ffffff30, #ffffff08); border: 1px solid #ffffff35; }
+		.scene::before, .scene::after { content: ""; position: absolute; border: 1px solid currentColor; border-radius: 50%; opacity: .12; }
+		.scene::before { width: 225px; height: 225px; }
+		.scene::after { width: 170px; height: 170px; }
+		.scene-emoji { z-index: 1; font-size: 6rem; filter: drop-shadow(0 12px 12px #0002); animation: sceneFloat 4s ease-in-out infinite; }
+		.scene-caption { position: absolute; z-index: 1; left: 15px; right: 15px; bottom: 16px; text-align: center; color: var(--muted-theme); font-family: "Dancing Script", cursive; font-size: 1.4rem; }
+		.scene-detail { position: absolute; font-size: 2rem; animation: sceneFloat 5s ease-in-out infinite; }
+		.detail-one { top: 26px; left: 27px; transform: rotate(-14deg); }
+		.detail-two { top: 43px; right: 27px; transform: rotate(12deg); animation-delay: -1.7s; }
+		.detail-three { right: 34px; bottom: 55px; transform: rotate(9deg); animation-delay: -2.7s; }
+		.letter { position: relative; padding: clamp(22px, 4vw, 42px); border: 1px solid #ffffff65; border-radius: 8px; background: var(--card); box-shadow: 0 22px 55px #2016231a; backdrop-filter: blur(12px); }
+		.letter::before { content: "“"; position: absolute; top: -20px; left: 16px; color: var(--accent); font-family: Georgia, serif; font-size: 5rem; opacity: .34; }
+		.letter p { position: relative; margin: 0; font-size: clamp(.98rem, 1.5vw, 1.12rem); line-height: 1.95; }
+		.letter-sign { display: block; margin-top: 18px; color: var(--accent); text-align: right; font-family: "Dancing Script", cursive; font-size: 1.55rem; }
+		.chapter-controls { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 18px; margin-top: 22px; }
+		.chapter-controls .nav-button { justify-self: start; }
+		.chapter-controls .nav-button:last-child { justify-self: end; }
+		.nav-button { display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 0 16px; border: 1px solid currentColor; border-radius: 999px; color: var(--text); background: #ffffff18; cursor: pointer; transition: background .2s, transform .2s; }
+		.nav-button:hover { transform: translateY(-2px); background: #ffffff39; }
+		.nav-button[hidden] { visibility: hidden; display: inline-flex; }
+		.dots { display: flex; justify-content: center; align-items: center; gap: 8px; }
+		.dot { width: 9px; height: 9px; padding: 0; border: 1px solid var(--accent); border-radius: 50%; background: transparent; cursor: pointer; opacity: .64; transition: width .28s, background .28s, opacity .28s; }
+		.dot[aria-current="step"] { width: 25px; border-radius: 99px; background: var(--accent); opacity: 1; }
+		.page-count { margin: 10px 0 0; color: var(--muted-theme); text-align: center; font-size: .75rem; }
+		.chapter-enter { animation: chapterIn .62s var(--ease) both; }
+		#journey.changing .story-layout { animation: chapterOut .2s ease both; }
+		.rain-layer, .ambient-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+		.particle { position: absolute; left: var(--x); top: -25px; opacity: var(--opacity, .55); animation: particleFall var(--duration, 9s) linear infinite; animation-delay: var(--delay, 0s); }
+		.particle.rain { width: 1px; height: 24px; background: linear-gradient(transparent, #d4e3e8a8); }
+		.particle.petal { width: 10px; height: 14px; border-radius: 90% 10% 80% 20%; background: #f5c0c888; }
+		.particle.spark { width: 4px; height: 4px; border-radius: 50%; background: #fff6bd; box-shadow: 0 0 12px 3px #fff5bd8c; animation-name: twinkle; }
+		.particle.heart { top: auto; bottom: -20px; color: #d84e7b; font-size: 15px; animation-name: heartRise; }
+		#confetti { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
+		.final-bloom { position: absolute; z-index: -1; inset: 0; opacity: .5; background: conic-gradient(from 0deg at 50% 50%, #ffda9e33, #ee8daf28, #b8e8c733, #f8c1c033, #ffda9e33); animation: bloomSpin 30s linear infinite; }
+		@keyframes fall { to { transform: translate3d(40px, 110vh, 0) rotate(390deg); } }
+		@keyframes particleFall { to { transform: translate3d(var(--drift, 30px), 110vh, 0) rotate(260deg); } }
+		@keyframes heartRise { to { transform: translate3d(var(--drift, 20px), -110vh, 0) rotate(18deg); } }
+		@keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.3); } }
+		@keyframes bouquetFloat { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-11px) rotate(1deg); } }
+		@keyframes glow { from { text-shadow: 0 0 20px #fff, 0 0 37px #f4a3bd; } to { text-shadow: 0 0 30px #fff, 0 0 62px #e982a9, 0 0 90px #f2b5c8; } }
+		@keyframes envelopePulse { 50% { transform: translateY(-6px) rotate(4deg); } }
+		@keyframes shake { 20%, 60% { transform: translateX(-7px) rotate(-1deg); } 40%, 80% { transform: translateX(7px) rotate(1deg); } }
+		@keyframes vanish { to { opacity: 0; transform: scale(0); visibility: hidden; } }
+		@keyframes sceneFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+		@keyframes chapterIn { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: translateX(0); } }
+		@keyframes chapterOut { to { opacity: 0; transform: translateX(-24px); } }
+		@keyframes bloomSpin { to { transform: rotate(360deg) scale(1.15); } }
+		@media (max-width: 680px) {
+			.screen-content { width: min(100% - 28px, 500px); }
+			.welcome-content { padding-top: 20px; }
+			.flower-bouquet { transform: scale(.87); margin-bottom: -5px; }
+			.welcome-title { margin: 21px auto 27px; }
+			.journey-content { justify-content: flex-start; padding: 26px 0 18px; overflow-y: auto; }
+			.chapter-header { align-items: flex-start; margin-bottom: 14px; }
+			.chapter-year { font-size: 3.2rem; }
+			.story-layout { grid-template-columns: 1fr; gap: 14px; }
+			.scene { min-height: 145px; }
+			.scene::before { width: 170px; height: 170px; }
+			.scene::after { width: 125px; height: 125px; }
+			.scene-emoji { font-size: 4.2rem; }
+			.scene-caption { bottom: 8px; font-size: 1.12rem; }
+			.scene-detail { font-size: 1.55rem; }
+			.detail-one { top: 15px; left: 24px; }
+			.detail-two { top: 15px; right: 26px; }
+			.detail-three { right: 30px; bottom: 31px; }
+			.letter { padding: 22px 20px; }
+			.letter p { font-size: .94rem; line-height: 1.78; }
+			.chapter-controls { gap: 7px; margin-top: 16px; }
+			.nav-button { min-height: 40px; padding: 0 11px; font-size: .83rem; }
+			.dots { gap: 5px; }
+			.dot { width: 7px; height: 7px; }
+			.dot[aria-current="step"] { width: 19px; }
+			.page-count { margin-top: 7px; }
+		}
+		@media (max-width: 380px) {
+			.chapter-controls { grid-template-columns: auto 1fr auto; }
+			.chapter-controls .nav-button { padding: 0 8px; font-size: .76rem; }
+			.dots { gap: 4px; }
+			.dot { width: 6px; height: 6px; }
+		}
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<section class="screen active" id="welcome" aria-label="Trang mở đầu">
+			<div class="petal-field" aria-hidden="true"></div>
+			<div class="screen-content welcome-content">
+				<div class="flower-bouquet" aria-label="Bó hoa tặng bạn" role="img">
+					<span class="flower-left">🌷</span><span class="flower-main">💐</span><span class="flower-right">🌹</span>
+				</div>
+				<p class="eyebrow" style="color:#b76382">Một món quà nhỏ, dành riêng cho bạn</p>
+				<h1 class="welcome-year">20/10</h1>
+				<p class="welcome-title script">Gửi bạn — <span>10 năm, 10 cung bậc cảm xúc</span> 🌸</p>
+				<button class="primary-button" id="start-button">Bắt đầu ✨</button>
+			</div>
+		</section>
+
+		<section class="screen" id="question" aria-label="Câu hỏi trước khi xem">
+			<div class="screen-content question-content">
+				<span class="envelope" aria-hidden="true">💌</span>
+				<p class="eyebrow" style="color:#f6bfd5">Trước khi mở món quà này...</p>
+				<h2 class="script">Bạn có muốn xem từng lời chúc không? 💌</h2>
+				<div class="question-actions">
+					<button class="primary-button" id="yes-button">CÓ 💗</button>
+					<button class="secondary-button" id="no-button">KHÔNG</button>
+				</div>
+				<p class="no-message" id="no-message" aria-live="polite"></p>
+			</div>
+		</section>
+
+		<section class="screen" id="journey" data-theme="2017" aria-label="Mười chương lời chúc">
+			<div class="ambient-layer" id="ambient-layer" aria-hidden="true"></div>
+			<div class="final-bloom" id="final-bloom" aria-hidden="true" hidden></div>
+			<canvas id="confetti" aria-hidden="true"></canvas>
+			<div class="screen-content journey-content">
+				<header class="chapter-header">
+					<div><p class="eyebrow chapter-kicker" id="chapter-kicker">CHƯƠNG 1 — VUI VẺ, NGÂY NGÔ</p><p class="chapter-mood" id="chapter-mood">Một khởi đầu trong veo của tuổi học trò</p></div>
+					<p class="chapter-year" id="chapter-year">2017</p>
+				</header>
+				<div class="story-layout" id="story-layout">
+					<div class="scene" id="scene" aria-hidden="true">
+						<span class="scene-detail detail-one" id="detail-one">🎒</span>
+						<span class="scene-detail detail-two" id="detail-two">✏️</span>
+						<span class="scene-emoji" id="scene-emoji">😄</span>
+						<span class="scene-detail detail-three" id="detail-three">📚</span>
+						<span class="scene-caption" id="scene-caption">Ngày đầu chung lớp</span>
+					</div>
+					<article class="letter" aria-live="polite">
+						<p id="wish-text"></p>
+						<span class="letter-sign">— mình</span>
+					</article>
+				</div>
+				<nav class="chapter-controls" aria-label="Điều hướng các chương">
+					<button class="nav-button" id="previous-button">← Trước</button>
+					<div class="dots" id="dots" aria-label="Chọn chương"></div>
+					<button class="nav-button" id="next-button">Tiếp →</button>
+				</nav>
+				<p class="page-count" id="page-count">1 / 10</p>
+			</div>
+		</section>
+	</main>
+	<script>
+		// Nội dung và hình ảnh biểu tượng của mười chặng đường tình bạn.
+		const chapters = [
+			{ year: 2017, mood: "Ngại ngùng, xa lạ 😅", caption: "Thỉnh thoảng hỏi bài", details: ["🎒", "✏️", "📝"], line: "Một vài câu hỏi bài trong lớp", wish: "20/10 vui nhé. Hồi lớp 10, mình chỉ nhớ thỉnh thoảng hỏi bạn bài thôi." },
+			{ year: 2018, mood: "Quen dần 🙂", caption: "Hỏi bài rồi nói thêm vài câu", details: ["📚", "📝", "💬"], line: "Nói chuyện thêm một chút sau khi hỏi bài", wish: "Lớp 11, hỏi bài xong đôi khi tụi mình nói thêm vài câu. Chúc bạn 20/10 vui vẻ nha." },
+			{ year: 2019, mood: "Bình thường 😶", caption: "Mỗi đứa lo chuyện thi cử", details: ["📖", "✏️", "🗓️"], line: "Ai cũng bận với việc của mình", wish: "Lớp 12, ai cũng bận lo chuyện thi cử của mình. Chúc bạn thi tốt và có một ngày 20/10 vui nhé." },
+			{ year: 2020, mood: "Chia tay, không lời hẹn 👋", caption: "Học xong cấp 3, mất liên lạc", details: ["🎓", "📚", "📵"], line: "Tốt nghiệp rồi chẳng còn liên lạc", wish: "Học xong cấp 3 rồi tụi mình cũng mất liên lạc luôn. Chúc bạn mọi việc thuận lợi ở chặng đường mới nhé." },
+			{ year: 2021, mood: "Im lặng, bặt tin 📵", caption: "Không còn tin nhắn", details: ["📱", "💬", "…"], line: "Một năm nữa không có tin nhắn nào", wish: "Năm nay vẫn không có tin nhắn nào giữa hai đứa. Chúc bạn khỏe mạnh, mọi chuyện ổn và 20/10 vui vẻ." },
+			{ year: 2022, mood: "Mờ nhạt, gần như quên 🌫️", caption: "Ký ức về bạn học cũ", details: ["📚", "☁️", "⌛"], line: "Thời gian làm ký ức nhạt dần", wish: "Lâu không liên lạc nên chắc ký ức về thời đi học cũng nhạt dần. Chúc bạn 20/10 vui nhé, mong bạn vẫn ổn." },
+			{ year: 2023, mood: "Chợt nhớ, thoáng qua 💭", caption: "Thấy tên trên newsfeed", details: ["📱", "👀", "💭"], line: "Thấy tên bạn rồi lướt qua", wish: "Thỉnh thoảng lướt Facebook thấy bạn, mình lại nhớ ra hồi trước từng học cùng lớp. Mình không nhắn, chỉ lướt qua thôi. Chúc bạn 20/10 vui vẻ nha." },
+			{ year: 2024, mood: "Ngập ngừng 🫥", caption: "Muốn nhắn rồi lại thôi", details: ["📱", "✍️", "…"], line: "Có lúc định hỏi thăm nhưng lại thôi", wish: "Có lúc mình cũng định nhắn hỏi thăm, nhưng rồi lại thôi vì lâu quá không nói chuyện. Chúc bạn 20/10 vui nhé. Hồi đó mình hơi ngại mở lời thật." },
+			{ year: 2025, mood: "Bỡ ngỡ, gặp lại ✨", caption: "Nói chuyện lại vài lần", details: ["💬", "📱", "✨"], line: "Bỡ ngỡ một chút, rồi thấy dễ nói chuyện", wish: "Năm nay tụi mình nói chuyện lại vài lần, ban đầu cũng hơi bỡ ngỡ. Nhưng nói chuyện rồi mình thấy vẫn khá dễ trao đổi, như lúc hỏi bài ngày trước. Chúc bạn 20/10 vui vẻ nha." },
+			{ year: 2026, mood: "Hợp nhau, thân hơn ❤️", caption: "Nói chuyện, làm bài, tâm sự", details: ["💬", "📝", "❤️"], line: "Nói chuyện lại và thấy hợp nhau hơn", wish: "20/10 năm nay mình muốn chúc bạn thật lòng lần đầu tiên. Không ngờ sau một quãng dài không liên lạc, nói chuyện lại tụi mình thấy khá hợp, rồi còn tâm sự với nhau nhiều hơn. Mình quý những cuộc trò chuyện đó, và vui vì giờ có thể hiểu bạn hơn một chút. Chúc bạn 20/10 vui, mọi việc thuận lợi. Mong tụi mình cứ giữ liên lạc, có bài thì cùng làm, có chuyện thì nhắn nhau như dạo này nhé." }
+		];
+
+		const screens = [...document.querySelectorAll(".screen")];
+		const journey = document.querySelector("#journey");
+		const ambientLayer = document.querySelector("#ambient-layer");
+		const dots = document.querySelector("#dots");
+		let currentChapter = 0;
+		let noCount = 0;
+		let yesCount = 0;
+		let confettiFrame;
+		const yesMessages = [
+			"Bạn chắc chắn muốn xem chứ? 😶",
+			"Bạn đã muốn xem thật sự chưa? Mình mở nhé?"
+		];
+		const noMessages = [
+			"Ơ, bạn chắc chắn chưa? ",
+			"Thật sự không xem sao? Mình viết mấy năm mới có dịp gửi đó 💔",
+			"Bạn không thoát được đâu, hãy bấm CÓ đi nào 😄"
+		];
+		const particleModes = { 2017: "petal", 2018: "spark", 2019: "spark", 2020: "spark", 2021: "rain", 2022: "spark", 2023: "mist", 2024: "petal", 2025: "heart", 2026: "spark" };
+
+		// Cánh hoa rơi ở trang mở đầu.
+		const petalField = document.querySelector(".petal-field");
+		for (let index = 0; index < 17; index++) {
+			const petal = document.createElement("i");
+			petal.className = "petal";
+			petal.style.left = `${Math.random() * 100}%`;
+			petal.style.animationDuration = `${8 + Math.random() * 10}s`;
+			petal.style.animationDelay = `${-Math.random() * 16}s`;
+			petal.style.transform = `scale(${.55 + Math.random() * .8})`;
+			petalField.append(petal);
+		}
+
+		chapters.forEach((chapter, index) => {
+			const dot = document.createElement("button");
+			dot.className = "dot";
+			dot.type = "button";
+			dot.setAttribute("aria-label", `Mở chương ${index + 1}, năm ${chapter.year}`);
+			dot.addEventListener("click", () => showChapter(index));
+			dots.append(dot);
+		});
+
+		function showScreen(id) {
+			screens.forEach(screen => screen.classList.toggle("active", screen.id === id));
+		}
+
+		function renderParticles(year) {
+			ambientLayer.replaceChildren();
+			const mode = particleModes[year];
+			const count = mode === "rain" ? 38 : mode === "spark" ? 24 : mode === "mist" ? 12 : 20;
+			for (let index = 0; index < count; index++) {
+				const particle = document.createElement("i");
+				particle.className = `particle ${mode === "mist" ? "spark" : mode}`;
+				particle.style.setProperty("--x", `${Math.random() * 100}%`);
+				particle.style.setProperty("--duration", `${mode === "rain" ? 2.6 + Math.random() * 2.5 : 7 + Math.random() * 10}s`);
+				particle.style.setProperty("--delay", `${-Math.random() * 16}s`);
+				particle.style.setProperty("--drift", `${-35 + Math.random() * 70}px`);
+				particle.style.setProperty("--opacity", `${.24 + Math.random() * .6}`);
+				if (mode === "heart") { particle.textContent = "♥"; particle.style.left = `${Math.random() * 100}%`; particle.style.animationDelay = `${-Math.random() * 12}s`; }
+				ambientLayer.append(particle);
+			}
+		}
+
+		function showChapter(index) {
+			currentChapter = Math.max(0, Math.min(chapters.length - 1, index));
+			const chapter = chapters[currentChapter];
+			journey.dataset.theme = chapter.year;
+			document.querySelector("#chapter-kicker").textContent = `CHƯƠNG ${currentChapter + 1} — ${chapter.mood.replace(/\s*[\p{Emoji_Presentation}\p{Extended_Pictographic}\uFE0F]+/gu, "").trim().toUpperCase()}`;
+			document.querySelector("#chapter-mood").textContent = chapter.line;
+			document.querySelector("#chapter-year").textContent = chapter.year;
+			document.querySelector("#scene-emoji").textContent = chapter.mood.match(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u)?.[0] || "💌";
+			document.querySelector("#scene-caption").textContent = chapter.caption;
+			document.querySelector("#detail-one").textContent = chapter.details[0];
+			document.querySelector("#detail-two").textContent = chapter.details[1];
+			document.querySelector("#detail-three").textContent = chapter.details[2];
+			document.querySelector("#wish-text").textContent = chapter.wish;
+			document.querySelector("#previous-button").hidden = currentChapter === 0;
+			document.querySelector("#next-button").hidden = currentChapter === chapters.length - 1;
+			document.querySelector("#page-count").textContent = `${currentChapter + 1} / ${chapters.length}`;
+			dots.querySelectorAll(".dot").forEach((dot, dotIndex) => {
+				if (dotIndex === currentChapter) dot.setAttribute("aria-current", "step");
+				else dot.removeAttribute("aria-current");
+			});
+			document.querySelector("#story-layout").classList.remove("chapter-enter");
+			void document.querySelector("#story-layout").offsetWidth;
+			document.querySelector("#story-layout").classList.add("chapter-enter");
+			renderParticles(chapter.year);
+			const isFinal = chapter.year === 2026;
+			document.querySelector("#final-bloom").hidden = !isFinal;
+			if (isFinal) launchConfetti();
+			else stopConfetti();
+		}
+
+		function launchConfetti() {
+			const canvas = document.querySelector("#confetti");
+			const context = canvas.getContext("2d");
+			const ratio = window.devicePixelRatio || 1;
+			canvas.width = window.innerWidth * ratio;
+			canvas.height = window.innerHeight * ratio;
+			context.setTransform(ratio, 0, 0, ratio, 0, 0);
+			const colors = ["#e96c91", "#f6c86f", "#92c9a2", "#a9c8e8", "#bd91c5", "#f28f63"];
+			const pieces = Array.from({ length: 125 }, () => ({ x: Math.random() * window.innerWidth, y: Math.random() * -window.innerHeight, size: 3 + Math.random() * 5, speed: 1.2 + Math.random() * 3.2, drift: -1.1 + Math.random() * 2.2, spin: Math.random() * Math.PI, color: colors[Math.floor(Math.random() * colors.length)] }));
+			const draw = () => {
+				context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+				pieces.forEach(piece => {
+					piece.y += piece.speed; piece.x += piece.drift; piece.spin += .04;
+					if (piece.y > window.innerHeight + 8) { piece.y = -10; piece.x = Math.random() * window.innerWidth; }
+					context.save(); context.translate(piece.x, piece.y); context.rotate(piece.spin); context.fillStyle = piece.color;
+					context.fillRect(-piece.size / 2, -piece.size / 2, piece.size, piece.size * .65); context.restore();
+				});
+				confettiFrame = requestAnimationFrame(draw);
+			};
+			stopConfetti();
+			draw();
+		}
+
+		function stopConfetti() {
+			if (confettiFrame) cancelAnimationFrame(confettiFrame);
+			confettiFrame = undefined;
+			const canvas = document.querySelector("#confetti");
+			if (canvas) canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+		}
+
+		document.querySelector("#start-button").addEventListener("click", () => showScreen("question"));
+		document.querySelector("#yes-button").addEventListener("click", () => {
+			if (yesCount < yesMessages.length) {
+				document.querySelector("#no-message").textContent = yesMessages[yesCount];
+				document.querySelector("#no-message").classList.add("show");
+				yesCount++;
+				return;
+			}
+			showChapter(0);
+			showScreen("journey");
+		});
+		document.querySelector("#no-button").addEventListener("click", event => {
+			const button = event.currentTarget;
+			const message = document.querySelector("#no-message");
+			button.classList.remove("shake");
+			void button.offsetWidth;
+			button.classList.add("shake");
+			message.textContent = noMessages[noCount];
+			message.classList.add("show");
+			noCount++;
+			if (noCount === noMessages.length) {
+				button.classList.add("vanish");
+				document.querySelector("#yes-button").classList.add("boosted");
+			}
+		});
+		document.querySelector("#previous-button").addEventListener("click", () => showChapter(currentChapter - 1));
+		document.querySelector("#next-button").addEventListener("click", () => showChapter(currentChapter + 1));
+		document.addEventListener("keydown", event => {
+			if (!journey.classList.contains("active")) return;
+			if (event.key === "ArrowLeft") showChapter(currentChapter - 1);
+			if (event.key === "ArrowRight") showChapter(currentChapter + 1);
+		});
+		window.addEventListener("resize", () => {
+			if (journey.classList.contains("active") && chapters[currentChapter].year === 2026) launchConfetti();
+		});
+	</script>
+</body>
+</html>
